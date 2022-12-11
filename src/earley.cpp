@@ -58,7 +58,7 @@ bool Earley::CheckWord(const Grammar& grammar, const std::string& word) {
   std::string start_right_part_extra;
   start_right_part_extra += grammar.start_symbol_;
   bool word_existence = situations_[word.size()].find(Situation{zero_symbol_, start_right_part_extra, 1, 0}) !=
-      situations_[word.size()].end();
+                        situations_[word.size()].end();
   situations_.clear();
   return word_existence;
 }

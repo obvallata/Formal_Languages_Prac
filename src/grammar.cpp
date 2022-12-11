@@ -2,9 +2,8 @@
 #include "fstream"
 #include "../include/grammar.h"
 
-Grammar::Grammar(const std::string& path_to_file, bool& successful_creation) {
-  std::fstream fs;
-  fs.open(path_to_file, std::fstream::in);
+Grammar::Grammar(std::basic_fstream<char>& fs, bool& successful_creation) {
+  fs.seekg(0);
   if (!fs.is_open()) {
     successful_creation = false;
     return;
@@ -20,7 +19,7 @@ Grammar::Grammar(const std::string& path_to_file, bool& successful_creation) {
   }
   std::getline(fs, new_rule);
   SetInRuleSeparator(new_rule[0]);
-  while(std::getline(fs, new_rule) && successful_creation) {
+  while (std::getline(fs, new_rule) && successful_creation) {
     successful_creation = AddRule(new_rule);
   }
   fs.close();

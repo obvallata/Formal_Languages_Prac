@@ -12,11 +12,14 @@ class Earley;
 class Grammar {
  public:
   Grammar() = default;
-  explicit Grammar(const std::string&, bool&);
+  explicit Grammar(std::basic_fstream<char>&, bool&);
   bool AddRule(const std::string&);
   void AddTerminal(const char&);
   void AddSupportive(const char&);
   void SetInRuleSeparator(const char&);
+  const std::map<char, std::vector<std::string>>& GetRules() const {
+    return rules_;
+  }
   friend class Earley;
 
  private:

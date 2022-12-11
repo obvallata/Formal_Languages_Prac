@@ -14,7 +14,7 @@ struct Situation {
       : left_part(left_part), right_part(std::move(right_part)), point_before(curr_pos), begin(begin){};
   bool operator==(const Situation& sec) const {
     return (left_part == sec.left_part) && (right_part == sec.right_part) && (point_before == sec.point_before) &&
-        (begin == sec.begin);
+           (begin == sec.begin);
   }
 };
 
@@ -48,4 +48,4 @@ class Earley {
   char zero_symbol_ = '$';
 };
 
-#endif //EARLEY__EARLEY_H_
+#endif  // EARLEY__EARLEY_H_

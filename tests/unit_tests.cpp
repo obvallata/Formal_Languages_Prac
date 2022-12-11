@@ -1,15 +1,18 @@
 #include <gtest/gtest.h>
+#include "fstream"
 #include "../include/grammar.h"
 #include "../include/earley.h"
 
-GTEST_API_ int main(int argc, char ** argv) {
+GTEST_API_ int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
 
 bool IsWordInGrammar(const std::string& path, const std::string word) {
+  std::fstream fs;
+  fs.open(path);
   bool success = true;
-  Grammar grammar(path, success);
+  Grammar grammar(fs, success);
   Earley ealey_alg;
   return ealey_alg.CheckWord(grammar, word);
 }
