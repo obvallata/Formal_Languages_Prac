@@ -1,0 +1,13 @@
+A
+B
+C
+---
+abc
+>
+:
+A>a:B:C:A
+B>b
+C>
+B>
+C>c
+A>B
