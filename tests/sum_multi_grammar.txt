@@ -1,0 +1,10 @@
+STF
++*x()
+>
+S>T+S
+S>(S)
+S>T
+T>F*T
+T>F
+F>(S)
+F>x
