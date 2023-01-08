@@ -33,7 +33,7 @@ struct SituationComparator {
   }
 };
 
-using situation_list = std::vector<std::set<Situation, SituationComparator> >;
+using situation_list = std::vector<std::set<Situation, SituationComparator>>;
 
 class Earley {
  public:
@@ -42,10 +42,13 @@ class Earley {
 
  private:
   void Predict(const Grammar&, size_t);
-  void Complete(const Grammar&, size_t);
+  void Complete(const Grammar&);
   void Scan(const Grammar&, size_t, const std::string&);
   situation_list situations_;
   char zero_symbol_ = '$';
+  std::set<Situation, SituationComparator> sit_to_update;
+  std::set<Situation, SituationComparator> sit_predicted;
+  std::set<Situation, SituationComparator> sit_completed;
 };
 
 #endif  // EARLEY__EARLEY_H_
