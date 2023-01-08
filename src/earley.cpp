@@ -1,24 +1,24 @@
 #include "../include/earley.h"
 
 void Earley::Predict(const Grammar& grammar, size_t j) {
-  for (auto& situation : situations_[j]) {
+  for (auto& situation : sit_to_update) {
     if (situation.point_before < situation.right_part.size() &&
         grammar.supportive_.find(situation.right_part[situation.point_before]) != grammar.supportive_.end()) {
       char not_terminal = situation.right_part[situation.point_before];
       for (auto& rule : grammar.rules_.at(not_terminal)) {
-        situations_[j].emplace(not_terminal, rule, 0, j);
+        sit_predicted.emplace(not_terminal, rule, 0, j);
       }
     }
   }
 }
 
-void Earley::Complete(const Grammar& grammar, size_t j) {
-  for (auto& situation : situations_[j]) {
+void Earley::Complete(const Grammar& grammar) {
+  for (auto& situation : sit_to_update) {
     if (situation.point_before == situation.right_part.size()) {
       char not_terminal = situation.left_part;
       for (auto& elem : situations_[situation.begin]) {
         if (elem.point_before < elem.right_part.size() && not_terminal == elem.right_part[elem.point_before]) {
-          situations_[j].emplace(elem.left_part, elem.right_part, elem.point_before + 1, elem.begin);
+          sit_completed.emplace(elem.left_part, elem.right_part, elem.point_before + 1, elem.begin);
         }
       }
     }
@@ -30,11 +30,8 @@ void Earley::Scan(const Grammar& grammar, size_t j, const std::string& word) {
     return;
   }
   for (auto& situation : situations_[j - 1]) {
-    if (situation.point_before < situation.right_part.size() &&
-        grammar.terminals_.find(situation.right_part[situation.point_before]) != grammar.terminals_.end()) {
-      if (situation.right_part[situation.point_before] == word[j - 1]) {
-        situations_[j].emplace(situation.left_part, situation.right_part, situation.point_before + 1, situation.begin);
-      }
+    if (situation.point_before < situation.right_part.size() && situation.right_part[situation.point_before] == word[j - 1]) {
+      situations_[j].emplace(situation.left_part, situation.right_part, situation.point_before + 1, situation.begin);
     }
   }
 }
@@ -45,14 +42,27 @@ bool Earley::CheckWord(const Grammar& grammar, const std::string& word) {
   std::string start_right_part;
   start_right_part += grammar.start_symbol_;
   situations_[0].emplace(zero_symbol_, std::move(start_right_part), 0, 0);
-  auto old_copy = empty_elem;
   for (size_t j = 0; j <= word.size(); ++j) {
-    old_copy = empty_elem;
     Scan(grammar, j, word);
-    while (old_copy != situations_[j]) {
-      old_copy = situations_[j];
-      Complete(grammar, j);
+    sit_to_update = situations_[j];
+    bool changes = true;
+    while (changes) {
+      Complete(grammar);
       Predict(grammar, j);
+      sit_to_update.clear();
+      for (const auto& elem : sit_completed) {
+        situations_[j].emplace(elem);
+        sit_to_update.emplace(elem);
+      }
+      for (const auto& elem : sit_predicted) {
+        situations_[j].emplace(elem);
+        sit_to_update.emplace(elem);
+      }
+      if (sit_predicted.empty() && sit_completed.empty()) {
+        changes = false;
+      }
+      sit_completed.clear();
+      sit_predicted.clear();
     }
   }
   std::string start_right_part_extra;
